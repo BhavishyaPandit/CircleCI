@@ -15,21 +15,22 @@ jobs:
     steps:
       - checkout
       - run: python3 main-test.py
-  deploy: # this can be any name you choose
-  executor: circleci/heroku:1.2.6 # use the default executor defined within the orb
-  steps:
-    - attach_workspace:
-        at: ~/circleci-python
-    - heroku/deploy-via-git:
-        force: true
+  deploy:
+    docker:
+    - image: "circleci/python:3.6.4"
+    steps:
+    - run: echo "Deploying to production"
 
 workflows:
-build_test_deploy:
-jobs:
-  - build_and_test
-  - deploy:
-      requires:
-        - build_and_test # only deploy if the build_and_test job has completed
-      filters:
-        branches:
-          only: master
+  build_and_test:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build
+      - deploy:
+          requires:
+            - test
+          filters:
+            branches:
+              only: master
