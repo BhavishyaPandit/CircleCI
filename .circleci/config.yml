@@ -1,8 +1,5 @@
 version: 2.1
 
-orbs:
-heroku: circleci/heroku@1.2.6
-
 jobs:
   build:
     working_directory: ~/circleci-python
@@ -19,7 +16,7 @@ jobs:
       - checkout
       - run: python3 main-test.py
   deploy: # this can be any name you choose
-  executor: heroku/default # use the default executor defined within the orb
+  executor: circleci/heroku:1.2.6 # use the default executor defined within the orb
   steps:
     - attach_workspace:
         at: ~/circleci-python
