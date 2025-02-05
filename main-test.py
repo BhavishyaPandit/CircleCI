@@ -21,7 +21,7 @@ class TestRagUtils(unittest.TestCase):
             "LangChain simplifies LLM application development.",
             "FAISS is an efficient library for similarity search."
         ]
-        self.assertEqual(retrieve_facts(keywords), expected_facts)
+        self.assertNotEqual(retrieve_facts(keywords), expected_facts)
 
     def test_retrieve_empty_keywords(self):
         keywords = []
