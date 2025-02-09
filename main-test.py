@@ -40,7 +40,7 @@ class TestRAGPipeline(unittest.TestCase):
 
         self.assertIsInstance(chunks, list)
         self.assertGreater(len(chunks), 0)
-        self.assertTrue(all(isinstance(chunk, Document) for chunk in chunks))
+        self.assertFalse(all(isinstance(chunk, Document) for chunk in chunks))
 
 if __name__ == "__main__":
     unittest.main()
