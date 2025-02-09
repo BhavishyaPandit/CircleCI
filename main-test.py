@@ -1,39 +1,46 @@
 import unittest
-from main import retrieve_facts
+from unittest.mock import MagicMock, patch
+from langchain.schema import Document
+from langchain_core.retrievers import BaseRetriever
+import main 
 
-class TestRagUtils(unittest.TestCase):
+class MockRetriever(BaseRetriever):
+    """Mock Retriever that simulates a real retriever's behavior."""
+    def _get_relevant_documents(self, query):
+        return [Document(page_content="Evaluation frameworks are crucial for AI models.")]
 
-    def test_retrieve_existing_facts(self):
-        keywords = ["langchain", "rag"]
-        expected_facts = [
-            "LangChain simplifies LLM application development.",
-            "RAG improves LLM accuracy by grounding them in external data."
-        ]
-        self.assertEqual(retrieve_facts(keywords), expected_facts)
+    async def _aget_relevant_documents(self, query):
+        return self._get_relevant_documents(query)
 
-    def test_retrieve_nonexistent_facts(self):
-        keywords = ["nonexistent_keyword"]
-        self.assertEqual(retrieve_facts(keywords), [])
+class TestRAGPipeline(unittest.TestCase):
 
-    def test_retrieve_mixed_facts(self):
-        keywords = ["langchain", "nonexistent_keyword", "faiss"]
-        expected_facts = [
-            "LangChain simplifies LLM application development.",
-            "FAISS is an efficient library for similarity search."
-        ]
-        self.assertNotEqual(retrieve_facts(keywords), expected_facts)
+    @patch("main.load_pdf")
+    @patch("main.create_faiss_vector_store")
+    def test_rag_pipeline(self, mock_create_faiss, mock_load_pdf):
+        """Test the RAG pipeline end-to-end with mocks."""
 
-    def test_retrieve_empty_keywords(self):
-        keywords = []
-        self.assertEqual(retrieve_facts(keywords), [])
+        # Mock the document loader
+        mock_load_pdf.return_value = [Document(page_content="Evaluation frameworks are crucial for AI models.")]
 
-    def test_retrieve_case_insensitive(self):
-        keywords = ["LangChain", "RAG"]  # Capitalized keywords
-        expected_facts = [
-            "LangChain simplifies LLM application development.",
-            "RAG improves LLM accuracy by grounding them in external data."
-        ]
-        self.assertEqual(retrieve_facts(keywords), expected_facts)
+        # Mock FAISS Vector Store and Retriever
+        mock_retriever = MockRetriever()
+        mock_create_faiss.return_value = MagicMock(as_retriever=MagicMock(return_value=mock_retriever))
 
-if __name__ == '__main__':
+        # Run the pipeline with a mock query
+        response = main.rag_pipeline("https://services.google.com/fh/files/misc/evaluation_framework.pdf", "What is the main topic?")
+
+        # Assertions
+        self.assertIsNotNone(response)
+        self.assertIn("Evaluation frameworks", response)
+
+    def test_split_text(self):
+        """Test if text splitter correctly splits text into chunks."""
+        documents = [Document(page_content="This is a sample document with multiple lines of text.")]
+        chunks = main.split_text(documents, chunk_size=10, chunk_overlap=2)
+
+        self.assertIsInstance(chunks, list)
+        self.assertGreater(len(chunks), 0)
+        self.assertTrue(all(isinstance(chunk, Document) for chunk in chunks))
+
+if __name__ == "__main__":
     unittest.main()
