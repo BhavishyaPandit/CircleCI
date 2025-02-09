@@ -1,7 +1,7 @@
 huggingface
 google-generativeai
 langchain-community
-langchain-googlegenai
+langchain-google-genai
 pypdf
 langchain
 faiss-cpu
