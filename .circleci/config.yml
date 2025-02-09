@@ -10,8 +10,8 @@ jobs:
       - run:
           name: Install Dependencies
           command: |
-            python3 -m pip install --upgrade pip
-            pip install -r requirements.txt
+            python3 -m pip install --upgrade --user pip
+            pip install --user -r requirements.txt
       - run: python3 main.py
 
   test:
@@ -23,8 +23,8 @@ jobs:
       - run:
           name: Install Dependencies
           command: |
-            python3 -m pip install --upgrade pip
-            pip install -r requirements.txt
+            python3 -m pip install --upgrade --user pip
+            pip install --user -r requirements.txt
       - run: python3 main-test.py
 
   deploy:
@@ -35,8 +35,8 @@ jobs:
       - run:
           name: Install Dependencies
           command: |
-            python3 -m pip install --upgrade pip
-            pip install -r requirements.txt
+            python3 -m pip install --upgrade --user pip
+            pip install --user -r requirements.txt
       - run: echo "Deploying to production"
 
 workflows:
