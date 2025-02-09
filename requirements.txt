@@ -1,0 +1,7 @@
+huggingface
+google-generativeai
+langchain-community
+langchain-googlegenai
+pypdf
+langchain
+faiss-cpu
