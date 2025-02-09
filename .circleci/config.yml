@@ -7,19 +7,37 @@ jobs:
       - image: "circleci/python:3.6.4"
     steps:
       - checkout
+      - run:
+          name: Install Dependencies
+          command: |
+            python3 -m pip install --upgrade pip
+            pip install -r requirements.txt
       - run: python3 main.py
+
   test:
     working_directory: ~/circleci-python
     docker:
       - image: "circleci/python:3.6.4"
     steps:
       - checkout
+      - run:
+          name: Install Dependencies
+          command: |
+            python3 -m pip install --upgrade pip
+            pip install -r requirements.txt
       - run: python3 main-test.py
+
   deploy:
     docker:
-    - image: "circleci/python:3.6.4"
+      - image: "circleci/python:3.6.4"
     steps:
-    - run: echo "Deploying to production"
+      - checkout
+      - run:
+          name: Install Dependencies
+          command: |
+            python3 -m pip install --upgrade pip
+            pip install -r requirements.txt
+      - run: echo "Deploying to production"
 
 workflows:
   build_and_test:
